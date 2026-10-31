@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+/sistema_gestione_pratiche/zscaler.cer
+/x1_lavorazione_pratiche/zscaler.cer
