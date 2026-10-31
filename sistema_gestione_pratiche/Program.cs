@@ -171,6 +171,7 @@ namespace sistema_gestione_pratiche
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<SignalRService>();
             builder.Services.AddScoped<NotificationsService>();
+            builder.Services.AddScoped<PraticheService>();
             builder.Services.AddCors(o => o.AddPolicy("Cors", builder =>
             {
                 builder.AllowAnyHeader()

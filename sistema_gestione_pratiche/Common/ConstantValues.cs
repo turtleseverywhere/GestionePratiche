@@ -6,7 +6,7 @@ namespace sistema_gestione_pratiche.Common
     public static class ConstantValues
     {
         public static class Auth
-        {            
+        {
             public const string AuthSettings = "AuthSettings";
             public const string DomainName = "DomainName";
             public const string DomainHost = "DomainHost";
@@ -36,6 +36,7 @@ namespace sistema_gestione_pratiche.Common
                     public const string CanSendSignalRMessageToConnection = "CanSendSignalRMessageToConnection";
                     public const string CanSendSignalRMessageToUser = "CanSendSignalRMessageToUser";
                     public const string CanUseNotifications = "CanUseNotifications";
+                    public const string CanManagePratiche = "CanManagePratiche";
                 }
                 public static class Values
                 {
@@ -55,6 +56,19 @@ namespace sistema_gestione_pratiche.Common
             public static readonly (object Result, HttpStatusCode StatusCode) LoginFailed = ("LoginFailed", HttpStatusCode.BadRequest);
             public static readonly (object Result, HttpStatusCode StatusCode) OK = ("OK", HttpStatusCode.OK);
             public static readonly (object Result, HttpStatusCode StatusCode) UserDoesntExist = ("UserDoesntExist", HttpStatusCode.BadRequest);
+        }
+        public static class Entities
+        {
+            public static class Pratiche
+            {
+                public static class Status
+                {
+                    public static string Created = "Created";
+                    public static string InProgress = "InProgress";
+                    public static string Approved = "Approved";
+                    public static string Rejected = "Rejected";
+                }
+            }
         }
     }
 }

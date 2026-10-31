@@ -58,3 +58,15 @@ CREATE TABLE "Notifications"(
 	"CreationDate" timestamp without time zone NOT NULL,
 	"ReadDate" timestamp NULL
 );
+
+CREATE TABLE "Pratiche"(
+	"Id" uuid PRIMARY KEY NOT NULL,
+	"CreatorId" uuid NOT NULL,
+	"CreatorName" text NOT NULL,
+	"CreatorLastName" text NOT NULL,
+	"CreatorCF" text NOT NULL,
+	"CreatorDateOfBirth" timestamp without time zone NOT NULL,
+	"ContentBytes" bytea NOT NULL,
+	"Status" text NOT NULL,
+	"CreationDate" timestamp without time zone NOT NULL
+);   
