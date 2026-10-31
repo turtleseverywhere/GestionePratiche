@@ -1,0 +1,216 @@
+<nz-spin [nzSize]="'large'" [nzSpinning]="pageIsLoading">
+  <h1 class="text-center">{{'Roles' | translate}}</h1>
+  <div class="rolesContainer">
+    <div nz-row>
+      <div nz-col nzSpan="20" nzLg="10" nzSm="16">
+        <!--con la search a comando fa una sola query quando si clicca-->
+        <nz-input-group nzSearch nzAddOnBeforeIcon="search" [nzAddOnAfter]="searchButtons">
+          <input type="text" nz-input [(ngModel)]="roleNameFilter" placeholder="{{'Name' | translate}}" />
+        </nz-input-group>
+        <ng-template #searchButtons>
+          <button nz-button nzType="primary" nzSearch (click)="getRoles()">{{'Search' | translate}}</button>
+          <button nz-button nzType="default" (click)="clearSearchRoles()">{{'Clear' | translate}}</button>
+        </ng-template>
+        <!--con la search immediata fa ogni volta una query-->
+        <!--<nz-input-group nzSearch nzAddOnBeforeIcon="search">
+          <input type="text" nz-input [(ngModel)]="roleNameFilter" placeholder="{{'Name' | translate}}" (ngModelChange)="getRoles()" />
+        </nz-input-group>-->
+      </div>
+    </div>
+    <div nz-row class="mb-3 mt-5">
+      <div nz-col>
+        <button nz-button nzType="primary" (click)="showRoleFormModal()">{{'AddRole' | translate}}</button>
+      </div>
+    </div>
+    <div nz-row *ngFor="let role of roles">
+      <div nz-col nzSpan="24">
+        <div nz-row>
+          <div nz-col nzSpan="12">
+            <div nz-row>
+              <div nz-col>
+                <h3 class="wordBreakText">
+                  <i nz-icon nzType="delete" nzTheme="fill" class="iconVerticalAlign pointerCursor redColor"
+                     (click)="showDeleteModal(role.id)"></i>
+                  <i nz-icon nzType="edit" nzTheme="fill" class="iconVerticalAlign pointerCursor orangeColor"
+                     (click)="showRoleFormModal(role)"></i>
+                  {{role.name}}
+                </h3>
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                <div nz-row>
+                  <div nz-col class="wordBreakText">
+                    {{'ID' | translate}}: {{role.id}}
+                  </div>
+                </div>
+                <div nz-row>
+                  <div nz-col class="wordBreakText">
+                    {{'Name' | translate}}: {{role.name}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--<div nz-row>
+              <div nz-col>
+                <button nz-button nzType="primary" nzDanger (click)="showDeleteModal(role.id)">{{'Delete' | translate}}</button>
+              </div>
+            </div>-->
+          </div>
+          <div nz-col nzSpan="12">
+            <h4>{{'Claims' | translate}}</h4>
+            <div nz-row *ngFor="let claim of role.roleClaims">
+              <div nz-col class="wordBreakText">
+                <i nz-icon nzType="delete" nzTheme="fill" class="iconVerticalAlign pointerCursor redColor"
+                   (click)="showRemoveClaimModal(role.id, claim.claimType, claim.claimValue)"></i>
+                {{claim.claimType}} {{claim.claimValue}}
+              </div>
+              <!--<div nz-col nzSpan="8">
+                <button nz-button nzType="primary" nzDanger (click)="showRemoveClaimModal(role.id, claim.claimType, claim.claimValue)">{{'Delete' | translate}}</button>
+              </div>-->
+            </div>
+            <br />
+            <div nz-row>
+              <div nz-col>
+                <button nz-button nzType="primary" (click)="showAddCustomClaimModal(role.id)">{{'CustomClaim' | translate}}</button>
+              </div>
+              <div nz-col>
+                <button nz-button nzType="primary" (click)="showExistingClaimsModal(role.id)">{{'ExistingClaims' | translate}}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </div>
+  </div>
+  <!--role form-->
+  <nz-modal [(nzVisible)]="roleModalIsVisible" nzTitle="{{'InsertRole' | translate}}" (nzOnCancel)="closeRoleModal()">
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="roleForm">
+        <nz-form-item>
+          <nz-form-control nzErrorTip="{{'ValueCantBeEmpty' | translate}}">
+            <nz-input-group>
+              <input formControlName="roleName" nz-input placeholder="{{'Name' | translate}}" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closeRoleModal()">{{'Cancel' | translate}}</button>
+      <button nz-button nzType="primary" (click)="confirmRoleModal()" [disabled]="!roleForm.valid">{{'OK' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/role form-->
+  <!--delete role-->
+  <nz-modal [(nzVisible)]="deleteModalIsVisible" nzTitle="{{'DeleteRole' | translate}}" (nzOnCancel)="closeDeleteModal()">
+    <ng-container *nzModalContent>
+      {{'AreYouSure' | translate}}
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closeDeleteModal()">{{'Cancel' | translate}}</button>
+      <button nz-button nzType="primary" (click)="confirmDeleteModal()">{{'OK' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/delete role-->
+  <!--add claim-->
+  <nz-modal [(nzVisible)]="addCustomClaimModalIsVisible" nzTitle="{{'CustomClaim' | translate}}" (nzOnCancel)="closeAddCustomClaimModal()">
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="addCustomClaimForm">
+        <nz-form-item>
+          <nz-form-control nzErrorTip="{{'ValueCantBeEmpty' | translate}}">
+            <nz-input-group>
+              <input formControlName="claimType" nz-input placeholder="{{'Type' | translate}}" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control nzErrorTip="{{'ValueCantBeEmpty' | translate}}">
+            <nz-input-group>
+              <input formControlName="claimValue" nz-input placeholder="{{'Value' | translate}}" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closeAddCustomClaimModal()">{{'Cancel' | translate}}</button>
+      <button nz-button nzType="primary" (click)="confirmAddCustomClaimModal()" [disabled]="!addCustomClaimForm.valid">{{'OK' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/add claim-->
+  <!--remove claim-->
+  <nz-modal [(nzVisible)]="removeClaimModalIsVisible" nzTitle="{{'RemoveClaim' | translate}}" (nzOnCancel)="closeRemoveClaimModal()">
+    <ng-container *nzModalContent>
+      {{'AreYouSure' | translate}}
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closeRemoveClaimModal()">{{'Cancel' | translate}}</button>
+      <button nz-button nzType="primary" (click)="confirmRemoveClaimModal()">{{'OK' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/remove claim-->
+  <!--existing claim-->
+  <nz-modal [(nzVisible)]="existingClaimsModalIsVisible" nzTitle="{{'ExistingClaims' | translate}}" (nzOnCancel)="closeExistingClaimsModal()">
+    <ng-container *nzModalContent>
+      <nz-input-group nzSearch nzAddOnBeforeIcon="search">
+        <input type="text" nz-input [(ngModel)]="existingClaimsFilter" placeholder="{{'TypeOrValue' | translate}}" (ngModelChange)="searchExistingClaims()" />
+      </nz-input-group>
+      <nz-table #existingClaimsTable
+                [nzData]="existingClaimsFiltered"
+                [nzTableLayout]="'auto'"
+                [nzShowPagination]="true"
+                [nzShowSizeChanger]="true"
+                [nzPageSize]="5"
+                [nzPageSizeOptions]="[5,10,20,50]"
+                [nzPaginationPosition]="'top'"
+                [nzLoading]="pageIsLoading">
+        <thead>
+          <tr>
+            <th *ngFor="let column of existingClaimsColumns"
+                [nzSortOrder]="column.sortOrder"
+                [nzSortFn]="column.sortFn">
+              {{ column.name | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of existingClaimsTable.data">
+            <td *ngIf="item.hasClaim"
+                class="pointerCursor"
+                style="color:green"
+                (click)="showRemoveExistingClaimModal(item.claim.claimType, item.claim.claimValue)">
+              <div>
+                <i class="iconVerticalAlign" nz-icon nzType="check" nzTheme="outline"></i>
+              </div>
+            </td>
+            <td *ngIf="!item.hasClaim"
+                class="pointerCursor"
+                style="color:red"
+                (click)="addExistingClaimToRole(item.claim.claimType, item.claim.claimValue)">
+              <div>
+                <i class="iconVerticalAlign" nz-icon nzType="close" nzTheme="outline"></i>
+              </div>
+            </td>
+            <td>{{ item.claim.claimType }}</td>
+            <td>{{ item.claim.claimValue }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="primary" (click)="closeExistingClaimsModal()">{{'Close' | translate}}</button>
+    </div>
+  </nz-modal>
+  <nz-modal [(nzVisible)]="removeExistingClaimModalIsVisible" nzTitle="{{'RemoveClaim' | translate}}" (nzOnCancel)="closeRemoveExistingClaimModal()">
+    <ng-container *nzModalContent>
+      {{'AreYouSure' | translate}}
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closeRemoveExistingClaimModal()">{{'Cancel' | translate}}</button>
+      <button nz-button nzType="primary" (click)="confirmRemoveExistingClaimModal()">{{'OK' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/existing claim-->
+</nz-spin>

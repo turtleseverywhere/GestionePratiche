@@ -1,0 +1,150 @@
+<!--<nz-spin nzSimple [nzSize]="'large'" [(ngModel)]="pageIsLoading"></nz-spin>-->
+<nz-layout>
+  <nz-header>
+    <div class="navbarHeader text-white">
+      <div><button class="btn dropdown-toggle" (click)="openSideNav()">{{'Menu' | translate}}</button></div>
+      <div class="navbarLanguage">
+        <div nz-row class="text-center">
+          <div nz-col nzSpan="22">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="languageDDLMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                {{'Language' | translate}}
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="languageDDLMenu">
+                <li>
+                  <a class="dropdown-item" (click)="changeLanguage('en')">{{'English' | translate}}</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" (click)="changeLanguage('it')">{{'Italian' | translate}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div nz-col nzSpan="2" class="notificationsIconContainer" *ngIf="user">
+            <span nz-icon
+                  nzType="bell"
+                  (click)="openNotificationsDrawer()"
+                  [nzTheme]="hasNotifications ? 'fill' : 'outline'"
+                  [ngClass]="hasNotifications ? 'notificationsIconFill': 'notificationsIconOutline'"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nz-header>
+  <nz-content>
+    <div class="minPageHeight">
+      <router-outlet></router-outlet>
+    </div>
+  </nz-content>
+  <nz-footer>Wonderful footer</nz-footer>
+</nz-layout>
+<!--navigation drawer-->
+<nz-drawer [nzClosable]="false"
+           [nzWidth]="250"
+           [nzVisible]="sideNavIsVisible"
+           nzPlacement="left"
+           (nzOnClose)="closeSideNav()"
+           [nzBodyStyle]="{'padding':'0px'}">
+  <ng-container *nzDrawerContent>
+    <div class="navigationContainer text-white text-center">
+      <h3 class="text-white mt-3">{{'ApplicationTitle' | translate}}</h3>
+      <div class="navigationContent mt-5">
+        <div>
+          <button class="navigation-button bg-transparent" type="button" routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeSideNav()">
+            <div class="navigation-item fs-5">{{'Home' | translate}}</div>
+          </button>
+        </div>
+        <div *ngIf="checkClaim('CanRegisterToSignalR')">
+          <button class="navigation-button bg-transparent" type="button" routerLink="/signalR/signalR" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeSideNav()">
+            <div class="navigation-item fs-5">{{'SignalR' | translate}}</div>
+          </button>
+        </div>
+        <div class="mt-1" *ngIf="checkClaim('CANDOANYTHING')">
+          <button class="navigation-button bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin">
+            <div class="navigation-item fs-5 dropdown-toggle">{{'Administration' | translate}}</div>
+          </button>
+          <div class="collapse" id="collapseAdmin">
+            <div class="cursor-pointer"
+                 routerLink="/admin/users" routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 (click)="closeSideNav()"
+                 *ngIf="checkClaim('CANDOANYTHING')">
+              <div class="navigation-item fs-6">{{'Users' | translate}}</div>
+            </div>
+            <div class="cursor-pointer"
+                 routerLink="/admin/roles"
+                 routerLinkActive="active"
+                 ariaCurrentWhenActive="page"
+                 (click)="closeSideNav()"
+                 *ngIf="checkClaim('CANDOANYTHING')">
+              <div class="navigation-item fs-6">{{'Roles' | translate}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="navigationFooter" *ngIf="user">
+        <div>{{user.username}}</div>
+        <button nz-button nzType="primary" (click)='logout(); closeSideNav()'>{{'Logout' | translate}}</button>
+      </div>
+    </div>
+  </ng-container>
+</nz-drawer>
+<!--/navigation drawer-->
+<!--notifications drawer-->
+<nz-drawer [nzClosable]="false"
+           [nzVisible]="notificationsDrawerIsVisible"
+           nzPlacement="right"
+           (nzOnClose)="closeNotificationsDrawer()"
+           [nzBodyStyle]="{'padding':'0px'}">
+  <ng-container *nzDrawerContent>
+    <div class="notificationsContainer text-white">
+      <div *ngIf="notifications.length == 0">
+        <h5 class="text-center text-white">{{'NoNotifications' | translate }}</h5>
+      </div>
+      <div *ngIf="notifications.length > 0">
+        <div *ngFor="let notification of notifications" class="mt-3">
+          <div [ngClass]="!notification.readDate ? 'unreadNotification': ''">
+            <div nz-row style="float:right">
+              <div nz-col>
+                <i nz-icon nzType="delete" nzTheme="fill" class="iconVerticalAlign pointerCursor redColor"
+                   (click)="deleteNotification(notification.id)"></i>
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                id: {{notification.id}}
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                senderId: {{notification.senderId}}
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                recipientId: {{notification.recipiendId}}
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                message: {{notification.message}}
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                creationDate: {{notification.creationDate}}
+              </div>
+            </div>
+            <div nz-row>
+              <div nz-col>
+                readDate: {{notification.readDate}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+</nz-drawer>
+<!--/notifications drawer-->

@@ -1,0 +1,5 @@
+{
+  "backendUrl": "http://localhost:5179/api/",
+  "loginFragment": "Auth/Login",
+  "refreshTokensFragment": "Auth/RefreshTokens"
+}

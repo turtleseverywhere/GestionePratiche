@@ -1,0 +1,80 @@
+version: '3.4'
+name: gestione_pratiche
+services:
+  gestione_pratiche_postgres:
+    image: "postgres:16.1-alpine3.18"
+    container_name: gestione_pratiche_postgres
+    volumes:
+      - gestione_pratiche_postgres_data:/var/lib/postgresql/data
+      - ./var/database/postgres/AuthDB_Postgres.sql:/docker-entrypoint-initdb.d/AuthDB_Postgres.sql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=AuthDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  sistema_gestione_pratiche:
+    image: sistema_gestione_pratiche
+    container_name: sistema_gestione_pratiche
+    build:
+      context: ./sistema_gestione_pratiche
+      dockerfile: ./Dockerfile
+    ports:
+      - 5179:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__1__Name=File
+      - Serilog__WriteTo__1__Args__path=Logs\\Logs.txt
+      - Serilog__WriteTo__1__Args__outputTemplate={Timestamp} {Message}{NewLine:1}{Exception:1}
+      - Serilog__WriteTo__1__Args__rollingInterval=Day
+      - Serilog__WriteTo__2__Name=PostgreSQL
+      - Serilog__WriteTo__2__Args__connectionString=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+      - Serilog__WriteTo__2__Args__tableName=Logs
+      - Serilog__WriteTo__2__Args__AutoCreateSqlTable=True      
+      - ConnectionStrings__AuthDB_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+      - ConnectionStrings__DbContext_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+    links:
+      - gestione_pratiche_postgres
+
+  x1_lavorazione_pratiche:
+    image: x1_lavorazione_pratiche
+    container_name: x1_lavorazione_pratiche
+    build:
+      context: ./x1_lavorazione_pratiche
+      dockerfile: ./Dockerfile
+    ports:
+      - 5180:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__1__Name=File
+      - Serilog__WriteTo__1__Args__path=Logs\\Logs.txt
+      - Serilog__WriteTo__1__Args__outputTemplate={Timestamp} {Message}{NewLine:1}{Exception:1}
+      - Serilog__WriteTo__1__Args__rollingInterval=Day
+      - Serilog__WriteTo__2__Name=PostgreSQL
+      - Serilog__WriteTo__2__Args__connectionString=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+      - Serilog__WriteTo__2__Args__tableName=Logs
+      - Serilog__WriteTo__2__Args__AutoCreateSqlTable=True      
+      - ConnectionStrings__AuthDB_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+      - ConnectionStrings__DbContext_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
+    links:
+      - gestione_pratiche_postgres
+
+  sistema_esterno:
+    image: sistema_esterno
+    container_name: sistema_esterno
+    build:
+      context: ./sistema_esterno
+      dockerfile: ./Dockerfile
+    ports: 
+      - 4200:80
+    links:
+      - sistema_gestione_pratiche
+
+
+volumes:
+  gestione_pratiche_postgres_data:
+    name: gestione_pratiche_postgres_data
+    driver: local

@@ -1,0 +1,6 @@
+services:
+  sistemagestionepratiche:
+    image: ${DOCKER_REGISTRY-}sistemagestionepratiche
+    build:
+      context: .
+      dockerfile: SistemaGestionePratiche/Dockerfile

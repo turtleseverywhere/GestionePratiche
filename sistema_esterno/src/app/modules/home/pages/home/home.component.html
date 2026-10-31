@@ -1,0 +1,17 @@
+<nz-spin [nzSize]="'large'" [nzSpinning]="pageIsLoading">
+  <h1 class="text-center">{{'ThisSite' | translate}}</h1>
+  <div nz-row *ngIf="!user" class="text-center">
+    <div nz-col nzSpan="24">
+      <input placeholder="Username" [(ngModel)]="selectedUsername">
+    </div>
+    <div nz-col nzSpan="24">
+      <input placeholder="Password" type="password" [(ngModel)]="selectedPassword">
+    </div>
+    <div nz-col nzSpan="24">
+      <button nz-button nzType="primary" (click)="login()">{{'Login' | translate}}</button>
+    </div>
+  </div>
+  <div *ngIf="user" class="text-center">
+    {{'Welcome' | translate}} {{user.username}}
+  </div>
+</nz-spin>

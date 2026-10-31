@@ -1,0 +1,14 @@
+<nz-spin [nzSize]="'large'" [nzSpinning]="pageIsLoading">
+  message: <input [(ngModel)]="messageToSend" />
+  <br />
+  <button (click)="sendMessageToBroadcast()">send to broadcast</button>
+  <br />
+  <button (click)="sendMessageToClient()">send to client</button> ->
+  <input [(ngModel)]="selectedClientId" />
+  <br />
+  <button (click)="sendMessageToConnection()">send to connection</button> ->
+  <input [(ngModel)]="selectedConnectionId" />
+  <br />
+  <button (click)="sendMessageToUser()">send to user</button> ->
+  <input [(ngModel)]="selectedUserId" />
+</nz-spin>
