@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using sistema_gestione_pratiche.Common;
 using sistema_gestione_pratiche.DB.Contexts;
+using sistema_gestione_pratiche.DB.Entities;
 using sistema_gestione_pratiche.DB.Entities.AuthEntities;
 using sistema_gestione_pratiche.Models;
 using System;
@@ -18,13 +19,16 @@ namespace sistema_gestione_pratiche.Services
         private DBContext dbContext;
         UserManager<User> userManager;
         private SignalRService signalRService;
+        private NotificationsService notificationsService;
         public PraticheService(DBContext dBContext
             , UserManager<User> userManager
-            , SignalRService signalRService)
+            , SignalRService signalRService
+            , NotificationsService notificationsService)
         {
             this.dbContext = dBContext;
             this.userManager = userManager;
             this.signalRService = signalRService;
+            this.notificationsService = notificationsService;
         }
 
         public async Task<(object Result, HttpStatusCode StatusCode)> GetPratiche(ClaimsPrincipal user)
@@ -60,7 +64,7 @@ namespace sistema_gestione_pratiche.Services
                     Status = ConstantValues.Entities.Pratiche.Status.Created
                 }).Entity;
                 await this.dbContext.SaveChangesAsync();
-                await this.signalRService.SendMessageToUser(userId, "Pratica created" + newPratica.Id);
+                await this.signalRService.SendMessageToUser(userId, "Pratica created " + newPratica.Id);
                 return (newPratica, HttpStatusCode.OK);
             }
             return ConstantValues.ServicesHttpResponses.BadRequest;
@@ -103,6 +107,7 @@ namespace sistema_gestione_pratiche.Services
                 pratica.Status = praticaModel.Status;
                 await this.dbContext.SaveChangesAsync();
                 /*</da mettere nel servizio esterno>*/
+                await this.notificationsService.InsertNotification(pratica.CreatorId, "Status updated " + pratica.Id + " " + pratica.Status);
                 await this.signalRService.SendMessageToUser(pratica.CreatorId.ToString(), "Status updated " + pratica.Id + " " + pratica.Status);
                 return ConstantValues.ServicesHttpResponses.OK;
             }
@@ -119,6 +124,8 @@ namespace sistema_gestione_pratiche.Services
                 {
                     this.dbContext.Remove(praticaToDelete);
                     await this.dbContext.SaveChangesAsync();
+                    await this.notificationsService.InsertNotification(praticaToDelete.CreatorId, "Pratica deleted " + praticaToDelete.Id);
+                    await this.signalRService.SendMessageToUser(praticaToDelete.CreatorId.ToString(), "Pratica deleted " + praticaToDelete.Id);
                     return ConstantValues.ServicesHttpResponses.OK;
                 }
                 return ConstantValues.ServicesHttpResponses.ItemDoesntExist;

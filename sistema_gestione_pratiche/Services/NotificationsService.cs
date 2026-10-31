@@ -36,6 +36,19 @@ namespace sistema_gestione_pratiche.Services
             return ConstantValues.ServicesHttpResponses.BadRequest;
         }
 
+        public async Task<(object Result, HttpStatusCode StatusCode)> InsertNotification(Guid recipientId, string message)
+        {
+            var newNotification = this.dbContext.Notifications.Add(new DB.Entities.Notification()
+            {
+                Id = Guid.NewGuid(),
+                RecipientId = recipientId,
+                Message = message,
+                CreationDate = DateTime.UtcNow
+            });
+            await this.dbContext.SaveChangesAsync();
+            return ConstantValues.ServicesHttpResponses.OK;
+        }
+
         public async Task<(object Result, HttpStatusCode StatusCode)> SetUnreadNotificationsAsRead(ClaimsPrincipal user)
         {
             string? userId = this.userManager.GetUserId(user);

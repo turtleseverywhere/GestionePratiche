@@ -55,7 +55,7 @@ CREATE TABLE "Notifications"(
 	"SenderId" uuid NULL,
 	"RecipientId" uuid NULL,
 	"Message" text NULL,
-	"CreationDate" timestamp without time zone NOT NULL,
+	"CreationDate" timestamp NOT NULL,
 	"ReadDate" timestamp NULL
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE "Pratiche"(
 	"CreatorName" text NOT NULL,
 	"CreatorLastName" text NOT NULL,
 	"CreatorCF" text NOT NULL,
-	"CreatorDateOfBirth" timestamp without time zone NOT NULL,
+	"CreatorDateOfBirth" timestamp NOT NULL,
 	"ContentBytes" bytea NOT NULL,
 	"Status" text NOT NULL,
-	"CreationDate" timestamp without time zone NOT NULL
+	"CreationDate" timestamp NOT NULL
 );   
