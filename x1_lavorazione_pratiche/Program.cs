@@ -211,16 +211,6 @@ namespace x1_lavorazione_pratiche
                 });
             });
 
-            try
-            {
-                //AESEncryptionHelper.DefaultKey = configuration.GetSection(ConstantValues.StringCypher.Cypher).GetSection(ConstantValues.StringCypher.Key).Value;
-                DBContextDump.InitialDump(builder.Services.BuildServiceProvider());
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error(ex, string.Empty);
-            }
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -230,5 +230,11 @@ export class ApiService {
     };
     return this.http.post<any>('Pratiche/GetPraticaHistory', body, this.httpOptions);
   }
+  downloadPraticaFromHistory(praticaId: string) {
+    let body = {
+      id: praticaId
+    };
+    return this.http.post<any>('Pratiche/DownloadPraticaFromHistory', body, this.httpOptions);
+  }
   //</pratiche>
 }

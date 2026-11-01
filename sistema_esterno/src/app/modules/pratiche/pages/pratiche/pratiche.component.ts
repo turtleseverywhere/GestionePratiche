@@ -261,9 +261,39 @@ export class PraticheComponent {
   //</pratica history>
 
   //<download pratica>
-  downloadPraticaPDF(praticaId: string): void {
+  downloadPratica(praticaId: string): void {
     this.pageIsLoading = true;
     this.apiService.downloadPratica(praticaId)
+      .pipe(takeUntil(this.subscriptions))
+      .subscribe({
+        next: (pratica => {
+          this.pageIsLoading = false;
+
+          const byteChars = atob(pratica.result.contentBytes);
+          const bytes = new Uint8Array(byteChars.length);
+          for (let i = 0; i < byteChars.length; i++) {
+            bytes[i] = byteChars.charCodeAt(i);
+          }
+
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = pratica.result.fileName;
+          a.click();
+
+          URL.revokeObjectURL(url);
+        }),
+        error: (error => {
+          this.pageIsLoading = false;
+          this.logger.error(error);
+        })
+      });
+  }
+  downloadPraticaFromHistory(praticaId: string): void {
+    this.pageIsLoading = true;
+    this.apiService.downloadPraticaFromHistory(praticaId)
       .pipe(takeUntil(this.subscriptions))
       .subscribe({
         next: (pratica => {

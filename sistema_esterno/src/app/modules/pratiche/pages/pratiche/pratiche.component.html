@@ -24,7 +24,7 @@
                      (click)="showPraticaHistoryModal(pratica.id)"></i>
                   <i nz-icon nzType="download" nzTheme="outline" class="iconVerticalAlign pointerCursor greenColor"
                      *ngIf="pratica.fileName"
-                     (click)="downloadPraticaPDF(pratica.id)"></i>
+                     (click)="downloadPratica(pratica.id)"></i>
                   {{pratica.fileName}}
                 </h3>
               </div>
@@ -159,7 +159,7 @@
               <td>
                 <i nz-icon nzType="download" nzTheme="outline" class="iconVerticalAlign pointerCursor greenColor"
                    *ngIf="pratica.fileName"
-                   (click)="downloadPraticaPDF(pratica.praticaId)"></i>{{pratica.fileName}}
+                   (click)="downloadPraticaFromHistory(pratica.id)"></i>{{pratica.fileName}}
               </td>
               <!--<td>{{pratica.contentBytes}}</td>-->
               <td>{{pratica.status}}</td>

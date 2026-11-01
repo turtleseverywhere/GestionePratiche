@@ -176,5 +176,28 @@ namespace sistema_gestione_pratiche.Controllers
                 };
             }
         }
+
+        [HttpPost("DownloadPraticaFromHistory")]
+        public async Task<object> DownloadPraticaFromHistory(PraticaModel pratica)
+        {
+            try
+            {
+                var result = await this.praticheService.DownloadPraticaFromHistory(pratica);
+                Response.StatusCode = (int)result.StatusCode;
+                return new
+                {
+                    result = result.Result
+                };
+            }
+            catch (Exception ex)
+            {
+                this.logger.Log(LogLevel.Error, ex, string.Empty);
+                Response.StatusCode = (int)ConstantValues.ServicesHttpResponses.InternalServerError.StatusCode;
+                return new
+                {
+                    result = ConstantValues.ServicesHttpResponses.InternalServerError.Result
+                };
+            }
+        }
     }
 }
