@@ -31,6 +31,10 @@ export class PraticheComponent {
   public selectedFileToUpload: NzUploadFile[] = [];
   public selectedFileToUploadAsBase64: string | null = null;
 
+  public selectedPraticaHistoryIdToView: string = '';
+  public praticaHistoryModalIsVisible: boolean = false;
+  public praticaHistory: any = [];
+
 
   constructor(private apiService: ApiService,
     private stateService: StateService,
@@ -124,6 +128,14 @@ export class PraticheComponent {
       } as NzUploadFile];
 
       this.selectedFileToUploadAsBase64 = pratica.contentBytes;
+      this.praticaForm.patchValue({ selectedFileToUpload: pratica.fileName || 'pratica.pdf' });
+    }
+    else if (pratica?.fileName && !pratica?.contentBytes) {
+      this.selectedFileToUpload = [{
+        uid: String(pratica.id),
+        name: pratica.fileName || 'pratica.pdf',
+        status: 'done'
+      } as NzUploadFile];
       this.praticaForm.patchValue({ selectedFileToUpload: pratica.fileName || 'pratica.pdf' });
     }
     this.praticaModalIsVisible = true;
@@ -220,25 +232,42 @@ export class PraticheComponent {
   //</delete pratica>
 
   //<pratica history>
-  showPraticaHistoryModal(praticaIdToDelete: string): void {
-
+  showPraticaHistoryModal(praticaHistoryIdToView: string): void {
+    this.selectedPraticaHistoryIdToView = praticaHistoryIdToView;
+    this.praticaHistoryModalIsVisible = true;
+    this.getPraticaHistory();
   }
   closePraticaHistoryModal() {
-
+    this.praticaHistoryModalIsVisible = false;
+    this.selectedPraticaHistoryIdToView = '';
   }
+  getPraticaHistory() {
+    this.pageIsLoading = true;
+    this.apiService.getPraticaHistory(this.selectedPraticaHistoryIdToView)
+      .pipe(takeUntil(this.subscriptions))
+      .subscribe({
+        next: (pratiche => {
+          this.pageIsLoading = false;
+          this.praticaHistory = pratiche.result;
+        }),
+        error: (error => {
+          this.pageIsLoading = false;
+          this.logger.error(error);
+        })
+      });
+  }
+
+
   //</pratica history>
 
   //<download pratica>
   downloadPraticaPDF(praticaId: string): void {
-
     this.pageIsLoading = true;
     this.apiService.downloadPratica(praticaId)
       .pipe(takeUntil(this.subscriptions))
       .subscribe({
         next: (pratica => {
           this.pageIsLoading = false;
-          console.log("downloaded..");
-          console.log(pratica);
 
           const byteChars = atob(pratica.result.contentBytes);
           const bytes = new Uint8Array(byteChars.length);
@@ -255,7 +284,6 @@ export class PraticheComponent {
           a.click();
 
           URL.revokeObjectURL(url);
-
         }),
         error: (error => {
           this.pageIsLoading = false;

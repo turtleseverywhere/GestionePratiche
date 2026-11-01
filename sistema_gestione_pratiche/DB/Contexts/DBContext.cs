@@ -12,6 +12,7 @@ namespace sistema_gestione_pratiche.DB.Contexts
 
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Pratica> Pratiche { get; set; }
+        public DbSet<PraticaHistory> PraticheHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

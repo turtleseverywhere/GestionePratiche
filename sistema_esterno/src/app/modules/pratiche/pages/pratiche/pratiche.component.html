@@ -89,7 +89,8 @@
               <nz-upload [nzBeforeUpload]="beforeUpload"
                          [nzFileList]="selectedFileToUpload"
                          (nzFileListChange)="selectedFileToUpload = $event"
-                         [nzRemove]="onRemove">
+                         [nzRemove]="onRemove"
+                         [nzShowUploadList]="{showRemoveIcon: true}">
                 <button nz-button type="button">
                   <span nz-icon nzType="upload"></span>
                   {{'Upload' | translate}}
@@ -118,4 +119,60 @@
     </div>
   </nz-modal>
   <!--/delete pratica-->
+  <!--pratica history-->
+  <nz-modal [(nzVisible)]="praticaHistoryModalIsVisible" [nzWidth]="'90%'" nzTitle="{{'PraticaHistory' | translate}}" (nzOnCancel)="closePraticaHistoryModal()">
+    <ng-container *nzModalContent>
+
+      <div nz-col nzSpan="24">
+        <nz-table #praticaHistoryTable
+                  [nzData]="praticaHistory"
+                  [nzTableLayout]="'auto'"
+                  [nzShowPagination]="true"
+                  [nzShowSizeChanger]="true"
+                  [nzPageSize]="5"
+                  [nzPageSizeOptions]="[5,10,20,50]"
+                  [nzPaginationPosition]="'top'"
+                  [nzLoading]="pageIsLoading"
+                  [nzScroll]="{ x: '1100px' }">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>creatorId</th>
+              <th>creatorName</th>
+              <th>creatorLastName</th>
+              <th>creatorCF</th>
+              <th>creatorDateOfBirth</th>
+              <th>contentBytes</th>
+              <th>status</th>
+              <th>creationDate</th>
+              <th>historytimestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pratica of praticaHistoryTable.data">
+              <td>{{pratica.praticaId}}</td>
+              <td>{{pratica.creatorId}}</td>
+              <td>{{pratica.creatorName}}</td>
+              <td>{{pratica.creatorLastName}}</td>
+              <td>{{pratica.creatorCF}}</td>
+              <td>{{pratica.creatorDateOfBirth}}</td>
+              <td>
+                <i nz-icon nzType="download" nzTheme="outline" class="iconVerticalAlign pointerCursor greenColor"
+                   *ngIf="pratica.fileName"
+                   (click)="downloadPraticaPDF(pratica.praticaId)"></i>{{pratica.fileName}}
+              </td>
+              <!--<td>{{pratica.contentBytes}}</td>-->
+              <td>{{pratica.status}}</td>
+              <td>{{pratica.creationDate}}</td>
+              <td>{{pratica.historyTimestamp}}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="closePraticaHistoryModal()">{{'Close' | translate}}</button>
+    </div>
+  </nz-modal>
+  <!--/pratica history-->
 </nz-spin>

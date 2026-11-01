@@ -39,7 +39,18 @@ namespace sistema_gestione_pratiche.Services
             {
                 var pratiche = this.dbContext.Pratiche
                      .Where(p => p.CreatorId == Guid.Parse(userId))
-                     .OrderByDescending(n => n.CreationDate)
+                      .Select(ph => new Pratica()
+                      {
+                          Id = ph.Id,
+                          CreationDate = ph.CreationDate,
+                          CreatorCF = ph.CreatorCF,
+                          CreatorDateOfBirth = ph.CreatorDateOfBirth,
+                          CreatorId = ph.CreatorId,
+                          CreatorName = ph.CreatorName,
+                          CreatorLastName = ph.CreatorLastName,
+                          FileName = ph.FileName,
+                          Status = ph.Status
+                      }).OrderByDescending(n => n.CreationDate)
                      .ToList();
 
                 return (pratiche, HttpStatusCode.OK);
@@ -65,6 +76,21 @@ namespace sistema_gestione_pratiche.Services
                     CreatorId = Guid.Parse(userId),
                     Status = ConstantValues.Entities.Pratiche.Status.Created
                 }).Entity;
+                this.dbContext.PraticheHistory.Add(new DB.Entities.PraticaHistory()
+                {
+                    Id = Guid.NewGuid(),
+                    HistoryTimestamp = DateTime.UtcNow,
+                    PraticaId = pratica.Id,
+                    CreatorName = pratica.CreatorName,
+                    CreatorLastName = pratica.CreatorLastName,
+                    CreatorDateOfBirth = pratica.CreatorDateOfBirth,
+                    CreatorCF = pratica.CreatorCF,
+                    FileName = pratica.FileName,
+                    ContentBytes = pratica.ContentBytes,
+                    CreationDate = pratica.CreationDate,
+                    CreatorId = pratica.CreatorId,
+                    Status = pratica.Status
+                });
                 await this.dbContext.SaveChangesAsync();
                 await this.notificationsService.InsertNotification(pratica.CreatorId, "Pratica created " + pratica.Id + " " + pratica.FileName);
                 await this.signalRService.SendMessageToUser(userId, "Pratica created " + pratica.Id + " " + pratica.FileName);
@@ -82,6 +108,22 @@ namespace sistema_gestione_pratiche.Services
             {
                 if (pratica.Status == ConstantValues.Entities.Pratiche.Status.Created)
                 {
+                    this.dbContext.PraticheHistory.Add(new DB.Entities.PraticaHistory()
+                    {
+                        Id = Guid.NewGuid(),
+                        HistoryTimestamp = DateTime.UtcNow,
+                        PraticaId = pratica.Id,
+                        CreatorName = pratica.CreatorName,
+                        CreatorLastName = pratica.CreatorLastName,
+                        CreatorDateOfBirth = pratica.CreatorDateOfBirth,
+                        CreatorCF = pratica.CreatorCF,
+                        FileName = pratica.FileName,
+                        ContentBytes = pratica.ContentBytes,
+                        CreationDate = pratica.CreationDate,
+                        CreatorId = pratica.CreatorId,
+                        Status = pratica.Status
+                    });
+                    await this.dbContext.SaveChangesAsync();
                     if (!string.IsNullOrEmpty(praticaModel.CreatorName))
                         pratica.CreatorName = praticaModel.CreatorName;
                     if (!string.IsNullOrEmpty(praticaModel.CreatorLastName))
@@ -90,10 +132,11 @@ namespace sistema_gestione_pratiche.Services
                         pratica.CreatorCF = praticaModel.CreatorCF;
                     if (praticaModel.CreatorDateOfBirth != null)
                         pratica.CreatorDateOfBirth = praticaModel.CreatorDateOfBirth;
-                    if (praticaModel.FileName != null)
+                    if (praticaModel.FileName != null && praticaModel.ContentBytes != null)
+                    {
                         pratica.FileName = praticaModel.FileName;
-                    if (praticaModel.ContentBytes != null)
                         pratica.ContentBytes = praticaModel.ContentBytes;
+                    }
                     await this.dbContext.SaveChangesAsync();
                     return ConstantValues.ServicesHttpResponses.OK;
                 }
@@ -110,6 +153,21 @@ namespace sistema_gestione_pratiche.Services
             {
                 /*<da mettere nel servizio esterno>*/
                 pratica.Status = praticaModel.Status;
+                this.dbContext.PraticheHistory.Add(new DB.Entities.PraticaHistory()
+                {
+                    Id = Guid.NewGuid(),
+                    HistoryTimestamp = DateTime.UtcNow,
+                    PraticaId = pratica.Id,
+                    CreatorName = pratica.CreatorName,
+                    CreatorLastName = pratica.CreatorLastName,
+                    CreatorDateOfBirth = pratica.CreatorDateOfBirth,
+                    CreatorCF = pratica.CreatorCF,
+                    FileName = pratica.FileName,
+                    ContentBytes = pratica.ContentBytes,
+                    CreationDate = pratica.CreationDate,
+                    CreatorId = pratica.CreatorId,
+                    Status = pratica.Status
+                });
                 await this.dbContext.SaveChangesAsync();
                 /*</da mettere nel servizio esterno>*/
                 await this.notificationsService.InsertNotification(pratica.CreatorId,
@@ -154,6 +212,33 @@ namespace sistema_gestione_pratiche.Services
                          .Where(p => p.Id == praticaModel.Id).FirstOrDefault();
                 if (pratica?.ContentBytes != null)
                     return (pratica, HttpStatusCode.OK);
+                return ConstantValues.ServicesHttpResponses.ItemDoesntExist;
+            }
+            return ConstantValues.ServicesHttpResponses.BadRequest;
+        }
+
+        public async Task<(object Result, HttpStatusCode StatusCode)> GetPraticaHistory(PraticaModel praticaModel)
+        {
+            if (praticaModel.Id.HasValue)
+            {
+                var praticaHistory = this.dbContext.PraticheHistory
+                         .Where(ph => ph.PraticaId == praticaModel.Id)
+                         .Select(ph => new PraticaHistory()
+                         {
+                             Id = ph.Id,
+                             CreationDate = ph.CreationDate,
+                             CreatorCF = ph.CreatorCF,
+                             CreatorDateOfBirth = ph.CreatorDateOfBirth,
+                             CreatorId = ph.CreatorId,
+                             CreatorName = ph.CreatorName,
+                             CreatorLastName = ph.CreatorLastName,
+                             FileName = ph.FileName,
+                             HistoryTimestamp = ph.HistoryTimestamp,
+                             PraticaId = ph.PraticaId,
+                             Status = ph.Status
+                         }).ToList();
+                if (praticaHistory != null)
+                    return (praticaHistory, HttpStatusCode.OK);
                 return ConstantValues.ServicesHttpResponses.ItemDoesntExist;
             }
             return ConstantValues.ServicesHttpResponses.BadRequest;
