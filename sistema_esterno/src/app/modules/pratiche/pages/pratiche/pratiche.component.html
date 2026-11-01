@@ -23,8 +23,9 @@
                   <i nz-icon nzType="history" nzTheme="outline" class="iconVerticalAlign pointerCursor greenColor"
                      (click)="showPraticaHistoryModal(pratica.id)"></i>
                   <i nz-icon nzType="download" nzTheme="outline" class="iconVerticalAlign pointerCursor greenColor"
+                     *ngIf="pratica.fileName"
                      (click)="downloadPraticaPDF(pratica.id)"></i>
-                  {{pratica.id}}
+                  {{pratica.fileName}}
                 </h3>
               </div>
             </div>
@@ -61,12 +62,29 @@
           <nz-form-control nzErrorTip="{{'ValueCantBeEmpty' | translate}}">
             <nz-input-group>
               <h6>{{'User' | translate}}</h6>
+              <nz-form-label>{{'Name' | translate}}</nz-form-label>
               <input formControlName="creatorName" nz-input placeholder="{{'Name' | translate}}" />
+              <br />
+              <nz-form-label>{{'Surname' | translate}}</nz-form-label>
               <input formControlName="creatorLastName" nz-input placeholder="{{'Surname' | translate}}" />
+              <br />
+              <nz-form-label>{{'CF' | translate}}</nz-form-label>
               <input formControlName="creatorCF" nz-input placeholder="{{'CF' | translate}}" />
-              <input formControlName="creatorDateOfBirth" nz-input placeholder="{{'DateOfBirth' | translate}}" />
+              <br />
+              <nz-form-label>{{'DateOfBirth' | translate}}</nz-form-label>
+              <!--<input formControlName="creatorDateOfBirth" nz-input placeholder="{{'DateOfBirth' | translate}}" />-->
+              <nz-form-control [nzSm]="16" [nzXs]="24">
+                <nz-date-picker formControlName="creatorDateOfBirth"></nz-date-picker>
+              </nz-form-control>
+              <nz-form-label>{{'Status' | translate}}</nz-form-label>
               <input formControlName="status" nz-input placeholder="{{'Status' | translate}}" />
-              <input formControlName="creationDate" nz-input placeholder="{{'CreationDate' | translate}}" />
+              <br />
+              <nz-form-label>{{'CreationDate' | translate}}</nz-form-label>
+              <!--<input formControlName="creationDate" nz-input placeholder="{{'CreationDate' | translate}}" />-->
+              <nz-form-control [nzSm]="16" [nzXs]="24">
+                <nz-date-picker formControlName="creationDate"></nz-date-picker>
+              </nz-form-control>
+              <br />
               <h6>{{'Pratica' | translate}}</h6>
               <nz-upload [nzBeforeUpload]="beforeUpload"
                          [nzFileList]="selectedFileToUpload"

@@ -60,31 +60,26 @@ export class PraticheComponent {
   }
 
   beforeUpload = (file: NzUploadFile): boolean => {
-    console.log("beforeUpload");
-    console.log([file]);
     this.selectedFileToUpload = [file];
     this.praticaForm.patchValue({ selectedFileToUpload: file });
-    this.praticaForm.get('selectedFileToUpload')?.markAsTouched();
+    //this.praticaForm.get('selectedFileToUpload')?.markAsTouched();
     this.readAsBase64(file as unknown as File);
-    return false;                      // blocca l'upload automatico
+    return false // blocca l'upload automatico
   };
 
   private readAsBase64(file: File) {
     const reader = new FileReader();
     reader.onload = () => {
-      // result = "data:application/pdf;base64,AAAA..."
       this.selectedFileToUploadAsBase64 = (reader.result as string).split(',')[1];
     };
     reader.readAsDataURL(file);
-    console.log("readAsBase64");
-    console.log(this.selectedFileToUploadAsBase64);
   }
 
   onRemove = (): boolean => {
-    console.log("onRemove");
-    console.log(this.selectedFileToUploadAsBase64);
     this.selectedFileToUpload = [];
     this.selectedFileToUploadAsBase64 = null;
+    this.praticaForm.patchValue({ selectedFileToUpload: null });
+    //this.praticaForm.get('selectedFileToUpload')?.markAsTouched();
     return true;
   };
 
@@ -120,29 +115,33 @@ export class PraticheComponent {
         creationDate: pratica.creationDate
       });
     }
+    //devo aggiornarlo a mano sennò il form è invalido..
+    if (pratica?.contentBytes) {
+      this.selectedFileToUpload = [{
+        uid: String(pratica.id),
+        name: pratica.fileName || 'pratica.pdf',
+        status: 'done'
+      } as NzUploadFile];
+
+      this.selectedFileToUploadAsBase64 = pratica.contentBytes;
+      this.praticaForm.patchValue({ selectedFileToUpload: pratica.fileName || 'pratica.pdf' });
+    }
     this.praticaModalIsVisible = true;
   }
   closePraticaModal() {
     this.praticaModalIsVisible = false;
     this.praticaForm.reset();
+    this.selectedFileToUpload = [];
+    this.selectedFileToUploadAsBase64 = null;
   }
   confirmPraticaModal() {
-
-    console.log(this.praticaForm);
-    const payload = {
-      ...this.praticaForm.value,
-      fileName: this.selectedFileToUpload[0].name,
-      fileContent: this.selectedFileToUploadAsBase64,   // stringa base64
-    };
-    console.log(payload);
-
-
-    if (this.praticaForm.value.id && this.praticaForm.value.creatorCF != '') {
-      this.updatePratica();
-    }
-    else {
-      this.insertPratica();
-    }
+    if (this.selectedFileToUpload[0].name)
+      if (this.praticaForm.value.id) {
+        this.updatePratica();
+      }
+      else {
+        this.insertPratica();
+      }
   }
   insertPratica() {
     this.pageIsLoading = true;
@@ -230,8 +229,39 @@ export class PraticheComponent {
   //</pratica history>
 
   //<download pratica>
-  downloadPraticaPDF(praticaIdToDelete: string): void {
+  downloadPraticaPDF(praticaId: string): void {
 
+    this.pageIsLoading = true;
+    this.apiService.downloadPratica(praticaId)
+      .pipe(takeUntil(this.subscriptions))
+      .subscribe({
+        next: (pratica => {
+          this.pageIsLoading = false;
+          console.log("downloaded..");
+          console.log(pratica);
+
+          const byteChars = atob(pratica.result.contentBytes);
+          const bytes = new Uint8Array(byteChars.length);
+          for (let i = 0; i < byteChars.length; i++) {
+            bytes[i] = byteChars.charCodeAt(i);
+          }
+
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = pratica.result.fileName;
+          a.click();
+
+          URL.revokeObjectURL(url);
+
+        }),
+        error: (error => {
+          this.pageIsLoading = false;
+          this.logger.error(error);
+        })
+      });
   }
   //</download pratica>
 

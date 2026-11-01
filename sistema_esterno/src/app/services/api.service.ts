@@ -214,9 +214,15 @@ export class ApiService {
   }
   deletePratica(praticaId: string) {
     let body = {
-      praticaID: praticaId
+      id: praticaId
     };
     return this.http.post<any>('Pratiche/DeletePratica', body, this.httpOptions);
+  }
+  downloadPratica(praticaId: string) {
+    let body = {
+      id: praticaId
+    };
+    return this.http.post<any>('Pratiche/DownloadPratica', body, this.httpOptions);
   }
   //</pratiche>
 }
