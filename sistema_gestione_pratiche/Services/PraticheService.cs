@@ -58,6 +58,7 @@ namespace sistema_gestione_pratiche.Services
                     CreatorLastName = praticaModel.CreatorLastName,
                     CreatorDateOfBirth = praticaModel.CreatorDateOfBirth,
                     CreatorCF = praticaModel.CreatorCF,
+                    FileName = praticaModel.FileName,
                     ContentBytes = praticaModel.ContentBytes,
                     CreationDate = DateTime.UtcNow,
                     CreatorId = Guid.Parse(userId),
@@ -87,6 +88,8 @@ namespace sistema_gestione_pratiche.Services
                         pratica.CreatorCF = praticaModel.CreatorCF;
                     if (praticaModel.CreatorDateOfBirth != null)
                         pratica.CreatorDateOfBirth = praticaModel.CreatorDateOfBirth;
+                    if (praticaModel.FileName != null)
+                        pratica.FileName = praticaModel.FileName;
                     if (praticaModel.ContentBytes != null)
                         pratica.ContentBytes = praticaModel.ContentBytes;
                     await this.dbContext.SaveChangesAsync();

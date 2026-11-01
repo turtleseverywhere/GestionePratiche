@@ -66,6 +66,7 @@ CREATE TABLE "Pratiche"(
 	"CreatorLastName" text NOT NULL,
 	"CreatorCF" text NOT NULL,
 	"CreatorDateOfBirth" timestamp NOT NULL,
+	"FileName" text NOT NULL,
 	"ContentBytes" bytea NOT NULL,
 	"Status" text NOT NULL,
 	"CreationDate" timestamp NOT NULL

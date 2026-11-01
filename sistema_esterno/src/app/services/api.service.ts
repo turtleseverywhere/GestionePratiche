@@ -182,16 +182,33 @@ export class ApiService {
   getPratiche() {
     return this.http.get<any>('Pratiche/GetPratiche', this.httpOptions);
   }
-  insertPratica(praticaName: string) {
+  insertPratica(praticaId: string, creatorName: string, creatorLastName: string,
+    creatorCF: string, creatorDateOfBirth: string, status: string,
+    filename: string,
+    selectedFileToUpload: string | null) {
     let body = {
-      praticaName: praticaName
+      id: praticaId,
+      fileName: filename,
+      contentBytes: selectedFileToUpload,
+      creatorName: creatorName,
+      creatorLastName: creatorLastName,
+      creatorCF: creatorCF,
+      creatorDateOfBirth: creatorDateOfBirth
     };
     return this.http.post<any>('Pratiche/InsertPratica', body, this.httpOptions);
   }
-  updatePratica(praticaId: string, praticaName: string) {
+  updatePratica(praticaId: string, creatorName: string, creatorLastName: string,
+    creatorCF: string, creatorDateOfBirth: string, status: string,
+    filename: string,
+    selectedFileToUpload: string | null) {
     let body = {
-      praticaId: praticaId,
-      praticaName: praticaName
+      id: praticaId,
+      fileName: filename,
+      contentBytes: selectedFileToUpload,
+      creatorName: creatorName,
+      creatorLastName: creatorLastName,
+      creatorCF: creatorCF,
+      creatorDateOfBirth: creatorDateOfBirth
     };
     return this.http.post<any>('Pratiche/UpdatePratica', body, this.httpOptions);
   }

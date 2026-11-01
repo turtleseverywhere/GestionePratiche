@@ -60,6 +60,8 @@ export class PraticheComponent {
   }
 
   beforeUpload = (file: NzUploadFile): boolean => {
+    console.log("beforeUpload");
+    console.log([file]);
     this.selectedFileToUpload = [file];
     this.praticaForm.patchValue({ selectedFileToUpload: file });
     this.praticaForm.get('selectedFileToUpload')?.markAsTouched();
@@ -74,9 +76,13 @@ export class PraticheComponent {
       this.selectedFileToUploadAsBase64 = (reader.result as string).split(',')[1];
     };
     reader.readAsDataURL(file);
+    console.log("readAsBase64");
+    console.log(this.selectedFileToUploadAsBase64);
   }
 
   onRemove = (): boolean => {
+    console.log("onRemove");
+    console.log(this.selectedFileToUploadAsBase64);
     this.selectedFileToUpload = [];
     this.selectedFileToUploadAsBase64 = null;
     return true;
@@ -122,7 +128,7 @@ export class PraticheComponent {
   }
   confirmPraticaModal() {
 
-
+    console.log(this.praticaForm);
     const payload = {
       ...this.praticaForm.value,
       fileName: this.selectedFileToUpload[0].name,
@@ -135,13 +141,15 @@ export class PraticheComponent {
       this.updatePratica();
     }
     else {
-      console.log("insert");
       this.insertPratica();
     }
   }
   insertPratica() {
     this.pageIsLoading = true;
-    this.apiService.insertPratica(this.praticaForm.value.creatorCF)
+    this.apiService.insertPratica(this.praticaForm.value.id, this.praticaForm.value.creatorName, this.praticaForm.value.creatorLastName,
+      this.praticaForm.value.creatorCF, this.praticaForm.value.creatorDateOfBirth, this.praticaForm.value.status,
+      this.selectedFileToUpload[0].name,
+      this.selectedFileToUploadAsBase64)
       .pipe(takeUntil(this.subscriptions))
       .subscribe({
         next: (response => {
@@ -159,7 +167,10 @@ export class PraticheComponent {
   }
   updatePratica() {
     this.pageIsLoading = true;
-    this.apiService.updatePratica(this.praticaForm.value.id, this.praticaForm.value.creatorCF)
+    this.apiService.updatePratica(this.praticaForm.value.id, this.praticaForm.value.creatorName, this.praticaForm.value.creatorLastName,
+      this.praticaForm.value.creatorCF, this.praticaForm.value.creatorDateOfBirth, this.praticaForm.value.status,
+      this.selectedFileToUpload[0].name,
+      this.selectedFileToUploadAsBase64)
       .pipe(takeUntil(this.subscriptions))
       .subscribe({
         next: (response => {
