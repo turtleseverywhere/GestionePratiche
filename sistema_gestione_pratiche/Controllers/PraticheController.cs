@@ -28,10 +28,7 @@ namespace sistema_gestione_pratiche.Controllers
             {
                 var result = await this.praticheService.GetPratiche(User);
                 Response.StatusCode = (int)result.StatusCode;
-                return new
-                {
-                    pratiche = result.Result
-                };
+                return result.Result;
             }
             catch (Exception ex)
             {
@@ -65,12 +62,12 @@ namespace sistema_gestione_pratiche.Controllers
                 };
             }
         }
-        [HttpPost("EditPratica")]
-        public async Task<object> EditPratica(PraticaModel pratica)
+        [HttpPost("UpdatePratica")]
+        public async Task<object> UpdatePratica(PraticaModel pratica)
         {
             try
             {
-                var result = await this.praticheService.EditPratica(pratica);
+                var result = await this.praticheService.UpdatePratica(pratica);
                 Response.StatusCode = (int)result.StatusCode;
                 return new
                 {

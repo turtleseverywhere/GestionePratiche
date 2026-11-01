@@ -178,4 +178,28 @@ export class ApiService {
     return this.http.post<any>('Notifications/DeleteNotification', body, this.httpOptions);
   }
   //</notifications>
+  //<pratiche>
+  getPratiche() {
+    return this.http.get<any>('Pratiche/GetPratiche', this.httpOptions);
+  }
+  insertPratica(praticaName: string) {
+    let body = {
+      praticaName: praticaName
+    };
+    return this.http.post<any>('Pratiche/InsertPratica', body, this.httpOptions);
+  }
+  updatePratica(praticaId: string, praticaName: string) {
+    let body = {
+      praticaId: praticaId,
+      praticaName: praticaName
+    };
+    return this.http.post<any>('Pratiche/UpdatePratica', body, this.httpOptions);
+  }
+  deletePratica(praticaId: string) {
+    let body = {
+      praticaID: praticaId
+    };
+    return this.http.post<any>('Pratiche/DeletePratica', body, this.httpOptions);
+  }
+  //</pratiche>
 }

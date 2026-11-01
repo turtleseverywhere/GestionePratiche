@@ -59,6 +59,11 @@
             <div class="navigation-item fs-5">{{'SignalR' | translate}}</div>
           </button>
         </div>
+        <div *ngIf="checkClaim('CanManagePratiche')">
+          <button class="navigation-button bg-transparent" type="button" routerLink="/pratiche/pratiche" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeSideNav()">
+            <div class="navigation-item fs-5">{{'Pratiche' | translate}}</div>
+          </button>
+        </div>
         <div class="mt-1" *ngIf="checkClaim('CANDOANYTHING')">
           <button class="navigation-button bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdmin">
             <div class="navigation-item fs-5 dropdown-toggle">{{'Administration' | translate}}</div>

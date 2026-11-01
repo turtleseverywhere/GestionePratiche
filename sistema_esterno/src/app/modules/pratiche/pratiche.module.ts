@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthGuard } from '@services/auth.guard';
 import { NgZorroImportsModule } from '../../ngZorroImports.module';
 import { PraticheComponent } from './pages/pratiche/pratiche.component';
@@ -13,7 +13,7 @@ const routes: Routes = [
     component: PraticheComponent,
     canActivate: [AuthGuard],
     data: {
-      claim: ''
+      claim: 'CanManagePratiche'
     }
   }
 ];
@@ -23,11 +23,12 @@ const routes: Routes = [
     PraticheComponent
   ],
   imports: [
-    RouterModule.forChild(routes),
-    TranslateModule,
     CommonModule,
     FormsModule,
-    NgZorroImportsModule
+    ReactiveFormsModule,
+    NgZorroImportsModule,
+    TranslateModule,
+    RouterModule.forChild(routes)
   ],
   providers: [],
   exports: []

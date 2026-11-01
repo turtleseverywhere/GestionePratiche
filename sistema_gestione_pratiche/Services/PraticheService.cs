@@ -70,7 +70,7 @@ namespace sistema_gestione_pratiche.Services
             return ConstantValues.ServicesHttpResponses.BadRequest;
         }
 
-        public async Task<(object Result, HttpStatusCode StatusCode)> EditPratica(PraticaModel praticaModel)
+        public async Task<(object Result, HttpStatusCode StatusCode)> UpdatePratica(PraticaModel praticaModel)
         {
             var pratica = this.dbContext.Pratiche
                      .Where(p => p.Id == praticaModel.Id)
