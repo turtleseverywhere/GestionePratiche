@@ -11,7 +11,7 @@ namespace x1_lavorazione_pratiche.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = ConstantValues.Auth.Claims.Types.CanManagePratiche)]
+    [Authorize(Policy = ConstantValues.Auth.Claims.Types.CanManagePratiche)]
     public class PraticheController : ControllerBase
     {
         protected readonly ILogger<AuthController> logger;
