@@ -134,6 +134,12 @@ export class PraticheComponent {
         this.praticaForm.get('creationDate')?.disable();
       }
     }
+    //vuol dire che sto facendo una insert
+    if (!pratica) {
+      this.praticaForm.enable();
+      this.praticaForm.get('status')?.disable();
+      this.praticaForm.get('creationDate')?.disable();
+    }
     //devo aggiornarlo a mano sennò il form è invalido..
     if (pratica?.contentBytes) {
       this.selectedFileToUpload = [{
