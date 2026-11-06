@@ -166,7 +166,7 @@ namespace sistema_gestione_pratiche.Services
                     CreatorCF = pratica.CreatorCF,
                     FileName = pratica.FileName,
                     ContentBytes = pratica.ContentBytes,
-                    CreationDate = pratica.CreationDate,
+                    CreationDate = DateTime.SpecifyKind(pratica.CreationDate, DateTimeKind.Utc),
                     CreatorId = pratica.CreatorId,
                     Status = pratica.Status
                 });

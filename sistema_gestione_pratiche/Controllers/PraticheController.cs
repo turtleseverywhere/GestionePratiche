@@ -62,7 +62,7 @@ namespace sistema_gestione_pratiche.Controllers
                 };
             }
         }
-        [HttpPost("UpdatePratica")]
+        [HttpPut("UpdatePratica")]
         public async Task<object> UpdatePratica(PraticaModel pratica)
         {
             try
@@ -85,7 +85,7 @@ namespace sistema_gestione_pratiche.Controllers
             }
         }
 
-        [HttpPost("ChangePraticaStatus")]
+        [HttpPut("ChangePraticaStatus")]
         public async Task<object> ChangePraticaStatus(PraticaModel pratica)
         {
             try
@@ -108,7 +108,7 @@ namespace sistema_gestione_pratiche.Controllers
             }
         }
 
-        [HttpPost("DeletePratica")]
+        [HttpDelete("DeletePratica")]
         public async Task<object> DeletePratica(PraticaModel pratica)
         {
             try

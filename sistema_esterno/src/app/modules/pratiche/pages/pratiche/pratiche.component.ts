@@ -7,6 +7,7 @@ import { NGXLogger } from 'ngx-logger';
 import { ApiService } from '@services/api.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { __values } from 'tslib';
 
 @Component({
   selector: 'pratiche-component',
@@ -35,6 +36,9 @@ export class PraticheComponent {
   public praticaHistoryModalIsVisible: boolean = false;
   public praticaHistory: any = [];
 
+  public selectedPraticaStatusIdToView: string = '';
+  public praticaStatusModalIsVisible: boolean = false;
+  public selectedPraticaStatusToApply: string = '';
 
   constructor(private apiService: ApiService,
     private stateService: StateService,
@@ -47,7 +51,16 @@ export class PraticheComponent {
       creatorLastName: [null, [Validators.required]],
       creatorCF: [null, [Validators.required]],
       creatorDateOfBirth: [null, [Validators.required]],
-      status: [{ value: null, disabled: true }, [Validators.required]],
+      status: [{ value: null, disabled: true }, [Validators.required, control =>
+        control.value == 'Created'
+          ? { invalidStatus: true }
+          : null]],
+      /*
+      status: [{ value: null, disabled: true }, [Validators.required, control =>
+        control.value === 'InProgress'
+          ? { invalidStatus: true }
+          : null]],
+          */
       creationDate: [{ value: null, disabled: true }, [Validators.required]],
     });
     this.stateService.getUser()
@@ -107,6 +120,7 @@ export class PraticheComponent {
 
   //<pratica modal>
   showPraticaFormModal(pratica?: any): void {
+    console.log(pratica);
     if (pratica) {
       this.praticaForm.patchValue({
         id: pratica.id,
@@ -139,6 +153,7 @@ export class PraticheComponent {
       this.praticaForm.patchValue({ selectedFileToUpload: pratica.fileName || 'pratica.pdf' });
     }
     this.praticaModalIsVisible = true;
+    console.log(this.praticaForm)
   }
   closePraticaModal() {
     this.praticaModalIsVisible = false;
@@ -256,9 +271,43 @@ export class PraticheComponent {
         })
       });
   }
-
-
   //</pratica history>
+
+  //<pratica status>
+  showPraticaStatusModal(praticaStatusIdToView: string): void {
+    this.selectedPraticaStatusIdToView = praticaStatusIdToView;
+    this.praticaStatusModalIsVisible = true;
+  }
+  closePraticaStatusModal() {
+    this.praticaStatusModalIsVisible = false;
+    this.selectedPraticaStatusIdToView = '';
+    this.selectedPraticaStatusToApply = '';
+  }
+  setSelectedPraticaStatus(value: any) {
+    this.selectedPraticaStatusToApply = value;
+  }
+  confirmPraticaStatusModal() {
+    this.changePraticaStatus();
+  }
+  changePraticaStatus() {
+    this.pageIsLoading = true;
+    this.apiService.changePraticaStatus(this.selectedPraticaStatusIdToView, this.selectedPraticaStatusToApply)
+      .pipe(takeUntil(this.subscriptions))
+      .subscribe({
+        next: (response => {
+          this.pageIsLoading = false;
+          this.closePraticaStatusModal();
+          this.getPratiche();
+        }),
+        error: (error => {
+          this.pageIsLoading = false;
+          this.closePraticaStatusModal();
+          this.logger.error(error);
+          this.getPratiche();
+        })
+      });
+  }
+  //</pratica status>
 
   //<download pratica>
   downloadPratica(praticaId: string): void {

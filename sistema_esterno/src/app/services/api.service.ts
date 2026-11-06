@@ -210,13 +210,24 @@ export class ApiService {
       creatorCF: creatorCF,
       creatorDateOfBirth: creatorDateOfBirth
     };
-    return this.http.post<any>('Pratiche/UpdatePratica', body, this.httpOptions);
+    return this.http.put<any>('Pratiche/UpdatePratica', body, this.httpOptions);
+  }
+  changePraticaStatus(praticaId: string, newPraticaStatus: string) {
+    let body = {
+      id: praticaId,
+      status: newPraticaStatus
+    };
+    console.log(body);
+    return this.http.put<any>('Pratiche/ChangePraticaStatus', body, this.httpOptions);
   }
   deletePratica(praticaId: string) {
     let body = {
       id: praticaId
     };
-    return this.http.post<any>('Pratiche/DeletePratica', body, this.httpOptions);
+    //return this.http.post<any>('Pratiche/DeletePratica', body, this.httpOptions);
+    return this.http.delete<any>('Pratiche/DeletePratica', {
+      body: body, headers: this.httpOptions.headers
+    });
   }
   downloadPratica(praticaId: string) {
     let body = {
