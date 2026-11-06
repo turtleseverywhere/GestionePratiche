@@ -145,6 +145,9 @@ namespace sistema_gestione_pratiche.Services
                         pratica.ContentBytes = praticaModel.ContentBytes;
                     }
                     await this.dbContext.SaveChangesAsync();
+                    await this.notificationsService.InsertNotification(pratica.CreatorId, "Pratica updated " + pratica.Id + " " + pratica.FileName);
+                    await this.signalRService.SendMessageToUser(pratica.CreatorId.ToString(), "Pratica updated " + pratica.Id + " " + pratica.FileName);
+
                     return ConstantValues.ServicesHttpResponses.OK;
                 }
             }
@@ -182,12 +185,12 @@ namespace sistema_gestione_pratiche.Services
                         "Status updated "
                         + pratica.Id + " "
                         + pratica.FileName + " "
-                        + pratica.Status);
+                        + praticaModel.Status);
                     await this.signalRService.SendMessageToUser(pratica.CreatorId.ToString(),
                         "Status updated "
                         + pratica.Id + " "
                         + pratica.FileName + " "
-                        + pratica.Status);
+                        + praticaModel.Status);
                     return ConstantValues.ServicesHttpResponses.OK;
                 }
                 return ConstantValues.ServicesHttpResponses.InternalServerError;
