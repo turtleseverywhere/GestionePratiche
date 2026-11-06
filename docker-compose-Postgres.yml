@@ -14,6 +14,19 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  gestione_pratiche_postgres_tests:
+    image: "postgres:16.1-alpine3.18"
+    container_name: gestione_pratiche_postgres_tests
+    volumes:
+      - gestione_pratiche_postgres_tests_data:/var/lib/postgresql/data
+      - ./var/database/postgres/AuthDB_Postgres.sql:/docker-entrypoint-initdb.d/AuthDB_Postgres.sql
+    ports:
+      - 5431:5432
+    environment:
+      - POSTGRES_DB=AuthDB_tests
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
   # elasticsearch:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.17.24
   #   container_name: gestione_pratiche_elasticsearch
@@ -127,6 +140,9 @@ services:
 volumes:
   gestione_pratiche_postgres_data:
     name: gestione_pratiche_postgres_data
+    driver: local
+  gestione_pratiche_postgres_tests_data:
+    name: gestione_pratiche_postgres_tests_data
     driver: local
   # gestione_pratiche_elastic_data:
   #   name: gestione_pratiche_elastic_data

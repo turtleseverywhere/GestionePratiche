@@ -211,17 +211,21 @@ namespace sistema_gestione_pratiche
                 });
             });
 
-            try
+            var app = builder.Build();
+
+            if (!app.Environment.IsEnvironment("Testing"))
             {
-                //AESEncryptionHelper.DefaultKey = configuration.GetSection(ConstantValues.StringCypher.Cypher).GetSection(ConstantValues.StringCypher.Key).Value;
-                DBContextDump.InitialDump(builder.Services.BuildServiceProvider());
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Error(ex, string.Empty);
+                try
+                {
+                    //AESEncryptionHelper.DefaultKey = configuration.GetSection(ConstantValues.StringCypher.Cypher).GetSection(ConstantValues.StringCypher.Key).Value;
+                    DBContextDump.InitialDump(builder.Services.BuildServiceProvider());
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, string.Empty);
+                }
             }
 
-            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

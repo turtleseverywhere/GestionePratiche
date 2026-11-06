@@ -29,5 +29,6 @@
     </Properties>
   </Project>
   <Project Path="sistema_gestione_pratiche/sistema_gestione_pratiche.csproj" />
+  <Project Path="tests/tests.csproj" Id="f763f143-bc92-45ef-89ff-55f2e5cced96" />
   <Project Path="x1_lavorazione_pratiche/x1_lavorazione_pratiche.csproj" Id="8edc707a-3cc4-4a4b-bd09-0b720cfd7ad3" />
 </Solution>
