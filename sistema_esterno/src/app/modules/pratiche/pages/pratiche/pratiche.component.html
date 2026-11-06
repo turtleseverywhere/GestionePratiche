@@ -113,6 +113,7 @@
   <!--change pratica status-->
   <nz-modal [(nzVisible)]="praticaStatusModalIsVisible" nzTitle="{{'ChangeStatus' | translate}}" (nzOnCancel)="closePraticaStatusModal()">
     <ng-container *nzModalContent>
+      {{'Status' | translate}}
       <nz-select ngModel="" nzPlaceHolder="{{'ChangeStatus' | translate}}" (ngModelChange)="setSelectedPraticaStatus($event)">
         <nz-option nzValue="Created" nzLabel="{{'Created' | translate}}"></nz-option>
         <nz-option nzValue="InProgress" nzLabel="{{'InProgress' | translate}}"></nz-option>
