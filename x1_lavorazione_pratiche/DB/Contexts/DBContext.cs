@@ -11,7 +11,8 @@ namespace x1_lavorazione_pratiche.DB.Contexts
         }
 
         public DbSet<Notification> Notifications { get; set; }
-
+        public DbSet<Pratica> Pratiche { get; set; }
+        public DbSet<PraticaHistory> PraticheHistory { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

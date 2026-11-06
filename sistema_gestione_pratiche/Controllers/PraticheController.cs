@@ -90,7 +90,8 @@ namespace sistema_gestione_pratiche.Controllers
         {
             try
             {
-                var result = await this.praticheService.ChangePraticaStatus(pratica);
+                string userToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var result = await this.praticheService.ChangePraticaStatus(pratica, userToken);
                 Response.StatusCode = (int)result.StatusCode;
                 return new
                 {

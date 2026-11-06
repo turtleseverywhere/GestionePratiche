@@ -1,31 +1,36 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 using sistema_gestione_pratiche.Common;
 using sistema_gestione_pratiche.DB.Contexts;
 using sistema_gestione_pratiche.DB.Entities;
 using sistema_gestione_pratiche.DB.Entities.AuthEntities;
 using sistema_gestione_pratiche.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static sistema_gestione_pratiche.Common.ConstantValues.Entities;
+using static sistema_gestione_pratiche.Common.ConstantValues;
 
 namespace sistema_gestione_pratiche.Services
 {
     public class PraticheService
     {
+        IConfiguration configuration;
         private DBContext dbContext;
         UserManager<User> userManager;
         private SignalRService signalRService;
         private NotificationsService notificationsService;
-        public PraticheService(DBContext dBContext
+        public PraticheService(IConfiguration configuration
+            , DBContext dBContext
             , UserManager<User> userManager
             , SignalRService signalRService
             , NotificationsService notificationsService)
         {
+            this.configuration = configuration;
             this.dbContext = dBContext;
             this.userManager = userManager;
             this.signalRService = signalRService;
@@ -146,7 +151,7 @@ namespace sistema_gestione_pratiche.Services
             return ConstantValues.ServicesHttpResponses.BadRequest;
         }
 
-        public async Task<(object Result, HttpStatusCode StatusCode)> ChangePraticaStatus(PraticaModel praticaModel)
+        public async Task<(object Result, HttpStatusCode StatusCode)> ChangePraticaStatus(PraticaModel praticaModel, string userToken)
         {
             var pratica = this.dbContext.Pratiche
                      .Where(p => p.Id == praticaModel.Id)
@@ -154,35 +159,38 @@ namespace sistema_gestione_pratiche.Services
             if (pratica != null)
             {
                 /*<da mettere nel servizio esterno>*/
-                pratica.Status = praticaModel.Status;
-                this.dbContext.PraticheHistory.Add(new DB.Entities.PraticaHistory()
+
+                string? x1host = configuration.GetSection(ConstantValues.ExternalEntities.ExternalServices)
+                    .GetSection(ConstantValues.ExternalEntities.X1host).Value;
+                string? x1port = configuration.GetSection(ConstantValues.ExternalEntities.ExternalServices)
+                    .GetSection(ConstantValues.ExternalEntities.X1port).Value;
+                string url = x1host + ":" + x1port;
+                using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+                var response = await httpClient.PutAsJsonAsync(
+                    $"{x1host}:{x1port}/api/Pratiche/ChangePraticaStatus",
+                    new PraticaModel()
+                    {
+                        Id = praticaModel.Id,
+                        Status = praticaModel.Status
+                    }
+                    );
+
+                if (response.StatusCode == ConstantValues.ServicesHttpResponses.OK.StatusCode)
                 {
-                    Id = Guid.NewGuid(),
-                    HistoryTimestamp = DateTime.UtcNow,
-                    PraticaId = pratica.Id,
-                    CreatorName = pratica.CreatorName,
-                    CreatorLastName = pratica.CreatorLastName,
-                    CreatorDateOfBirth = pratica.CreatorDateOfBirth.HasValue ? DateTime.SpecifyKind(pratica.CreatorDateOfBirth.Value, DateTimeKind.Utc) : null,
-                    CreatorCF = pratica.CreatorCF,
-                    FileName = pratica.FileName,
-                    ContentBytes = pratica.ContentBytes,
-                    CreationDate = DateTime.SpecifyKind(pratica.CreationDate, DateTimeKind.Utc),
-                    CreatorId = pratica.CreatorId,
-                    Status = pratica.Status
-                });
-                await this.dbContext.SaveChangesAsync();
-                /*</da mettere nel servizio esterno>*/
-                await this.notificationsService.InsertNotification(pratica.CreatorId,
-                    "Status updated "
-                    + pratica.Id + " "
-                    + pratica.FileName + " "
-                    + pratica.Status);
-                await this.signalRService.SendMessageToUser(pratica.CreatorId.ToString(),
-                    "Status updated "
-                    + pratica.Id + " "
-                    + pratica.FileName + " "
-                    + pratica.Status);
-                return ConstantValues.ServicesHttpResponses.OK;
+                    await this.notificationsService.InsertNotification(pratica.CreatorId,
+                        "Status updated "
+                        + pratica.Id + " "
+                        + pratica.FileName + " "
+                        + pratica.Status);
+                    await this.signalRService.SendMessageToUser(pratica.CreatorId.ToString(),
+                        "Status updated "
+                        + pratica.Id + " "
+                        + pratica.FileName + " "
+                        + pratica.Status);
+                    return ConstantValues.ServicesHttpResponses.OK;
+                }
+                return ConstantValues.ServicesHttpResponses.InternalServerError;
             }
             return ConstantValues.ServicesHttpResponses.ItemDoesntExist;
         }

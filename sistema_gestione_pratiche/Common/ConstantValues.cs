@@ -70,5 +70,11 @@ namespace sistema_gestione_pratiche.Common
                 }
             }
         }
+        public static class ExternalEntities
+        {
+            public const string ExternalServices = "ExternalServices";
+            public const string X1host = "X1host";
+            public const string X1port = "X1port";
+        }
     }
 }
