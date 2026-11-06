@@ -61,12 +61,12 @@ services:
       - Serilog__WriteTo__2__Args__connectionString=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
       - Serilog__WriteTo__2__Args__tableName=Logs
       - Serilog__WriteTo__2__Args__AutoCreateSqlTable=True    
-      - Serilog__WriteTo__3__Name=Elasticsearch
-      - Serilog__WriteTo__3__Args__nodeUris=http://elasticsearch:9200
-      - Serilog__WriteTo__3__Args__indexFormat=x1-lavorazione-pratiche-{0:yyyy.MM.dd}
-      - Serilog__WriteTo__3__Args__autoRegisterTemplate=true
-      - Serilog__WriteTo__3__Args__autoRegisterTemplateVersion=ESv7
-      - Serilog__WriteTo__3__Args__numberOfReplicas=0
+      # - Serilog__WriteTo__3__Name=Elasticsearch
+      # - Serilog__WriteTo__3__Args__nodeUris=http://elasticsearch:9200
+      # - Serilog__WriteTo__3__Args__indexFormat=x1-lavorazione-pratiche-{0:yyyy.MM.dd}
+      # - Serilog__WriteTo__3__Args__autoRegisterTemplate=true
+      # - Serilog__WriteTo__3__Args__autoRegisterTemplateVersion=ESv7
+      # - Serilog__WriteTo__3__Args__numberOfReplicas=0
       - Serilog__Properties__ApplicationName=sistema_gestione_pratiche
       - ConnectionStrings__AuthDB_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
       - ConnectionStrings__DbContext_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
@@ -97,12 +97,12 @@ services:
       - Serilog__WriteTo__2__Args__connectionString=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
       - Serilog__WriteTo__2__Args__tableName=Logs
       - Serilog__WriteTo__2__Args__AutoCreateSqlTable=True  
-      - Serilog__WriteTo__3__Name=Elasticsearch
-      - Serilog__WriteTo__3__Args__nodeUris=http://elasticsearch:9200
-      - Serilog__WriteTo__3__Args__indexFormat=sistema-gestione-pratiche-{0:yyyy.MM.dd}
-      - Serilog__WriteTo__3__Args__autoRegisterTemplate=true
-      - Serilog__WriteTo__3__Args__autoRegisterTemplateVersion=ESv7
-      - Serilog__WriteTo__3__Args__numberOfReplicas=0 
+      # - Serilog__WriteTo__3__Name=Elasticsearch
+      # - Serilog__WriteTo__3__Args__nodeUris=http://elasticsearch:9200
+      # - Serilog__WriteTo__3__Args__indexFormat=sistema-gestione-pratiche-{0:yyyy.MM.dd}
+      # - Serilog__WriteTo__3__Args__autoRegisterTemplate=true
+      # - Serilog__WriteTo__3__Args__autoRegisterTemplateVersion=ESv7
+      # - Serilog__WriteTo__3__Args__numberOfReplicas=0 
       - Serilog__Properties__ApplicationName=x1_lavorazione_pratiche
       - ConnectionStrings__AuthDB_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
       - ConnectionStrings__DbContext_Postgres=Server=gestione_pratiche_postgres;Port=5432;Database=AuthDB;UserId=postgres;Password=postgres;
@@ -128,6 +128,6 @@ volumes:
   gestione_pratiche_postgres_data:
     name: gestione_pratiche_postgres_data
     driver: local
-  gestione_pratiche_elastic_data:
-    name: gestione_pratiche_elastic_data
-    driver: local
+  # gestione_pratiche_elastic_data:
+  #   name: gestione_pratiche_elastic_data
+  #   driver: local
