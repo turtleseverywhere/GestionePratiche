@@ -51,17 +51,8 @@ export class PraticheComponent {
       creatorLastName: [null, [Validators.required]],
       creatorCF: [null, [Validators.required]],
       creatorDateOfBirth: [null, [Validators.required]],
-      status: [{ value: null, disabled: true }, [Validators.required, control =>
-        control.value == 'Created'
-          ? { invalidStatus: true }
-          : null]],
-      /*
-      status: [{ value: null, disabled: true }, [Validators.required, control =>
-        control.value === 'InProgress'
-          ? { invalidStatus: true }
-          : null]],
-          */
-      creationDate: [{ value: null, disabled: true }, [Validators.required]],
+      status: [{ value: null, disabled: true }, [Validators.required]],
+      creationDate: [{ value: null, disabled: true }, [Validators.required]]
     });
     this.stateService.getUser()
       .pipe(takeUntil(this.subscriptions))
@@ -132,6 +123,16 @@ export class PraticheComponent {
         status: pratica.status,
         creationDate: pratica.creationDate
       });
+      //devo forzare a mano..
+      if (pratica.status !== 'Created') {
+        this.praticaForm.disable();
+      }
+      else {
+        this.praticaForm.enable();
+        //questi devono restare disabilitati
+        this.praticaForm.get('status')?.disable();
+        this.praticaForm.get('creationDate')?.disable();
+      }
     }
     //devo aggiornarlo a mano sennò il form è invalido..
     if (pratica?.contentBytes) {
