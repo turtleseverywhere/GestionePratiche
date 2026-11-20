@@ -9,9 +9,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["zscaler.cer", "/usr/local/share/ca-certificates/zscaler.crt"]
-RUN update-ca-certificates
-
 COPY ["x1_lavorazione_pratiche.csproj", "./"]
 RUN dotnet restore "x1_lavorazione_pratiche.csproj"
 COPY . .
